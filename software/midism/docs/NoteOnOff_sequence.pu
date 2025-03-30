@@ -1,0 +1,98 @@
+@startuml NoteOnOff_sequence
+
+participant MidiProcessor 
+participant MidiChannel
+participant NoteChannel
+participant RhythmChannel
+
+activate MidiProcessor
+activate MidiChannel
+'
+' Key On
+'
+MidiProcessor -> MidiChannel : NoteOn(key, velocity)
+
+alt NoteChannel
+  MidiChannel  -> NoteChannel : NoteOn(key, velocity)
+  activate NoteChannel
+
+  alt velocity != 0
+  NoteChannel  -> NoteChannel
+    note right
+      holdQueueから再利用可能なVoiceを検索
+      なければactiveQueueから再利用可能なVoiceを検索
+      なければfreeQueueから再利用可能なVoiceを検索
+    end note
+  alt 使用できるVoiceがなかった場合
+    NoteChannel  -> VoiceAllocator : Allocate(channel)
+    VoiceAllocator -> VoiceAllocator
+      note right
+        voice_poolから利用可能なVoiceを検索。
+        なければObserver経由で他NoteChannelに
+        未使用VoiceをRelease()で要求。
+      end note
+    NoteChannel <-- VoiceAllocator
+  end
+    NoteChannel  -> Voice : NoteOn(key, program, volume)
+    Voice  -> OpnBase : fm_set_tone()
+    note right
+      Programが変化したときのみ実行
+    end note
+    Voice <-- OpnBase
+    Voice  -> OpnBase : fm_set_volume()
+    note right
+      Volumeが変化したときのみ実行
+    end note
+    Voice <-- OpnBase
+    Voice  -> OpnBase : fm_set_pitch()
+    Voice <-- OpnBase
+    Voice  -> OpnBase : fm_turnon_key()
+    Voice <-- OpnBase
+    NoteChannel <-- Voice
+  else velocity == 0
+    NoteChannel  -> Voice : NoteOff(key)
+    Voice  -> OpnBase : fm_turnoff_key()
+    Voice <-- OpnBase
+    NoteChannel <-- Voice
+  end
+  MidiChannel <-- NoteChannel
+  deactivate NoteChannel
+
+else RhythmChannel
+  MidiChannel -> RhythmChannel : NoteOn(key, velocity)
+  activate RhythmChannel
+  RhythmChannel  -> OpnBase : rtm_set_total_level()
+  RhythmChannel <-- OpnBase
+  RhythmChannel  -> OpnBase : fm_turnon_key()
+  RhythmChannel <-- OpnBase
+  MidiChannel <-- RhythmChannel
+  deactivate RhythmChannel
+end
+
+MidiProcessor <-- MidiChannel
+
+'
+' Key Off
+'
+MidiProcessor -> MidiChannel : NoteOff(key, velocity)
+alt NoteChannel
+  MidiChannel  -> NoteChannel : NoteOff(key, velocity)
+  activate NoteChannel
+  NoteChannel  -> NoteChannel
+    note right
+      activeQueue or holdQueueからOnのVoiceを検索
+    end note
+  NoteChannel  -> Voice : NoteOff(key)
+  Voice  -> OpnBase : fm_turnoff_key()
+  Voice <-- OpnBase
+  NoteChannel <-- Voice
+  MidiChannel <-- NoteChannel
+  deactivate NoteChannel
+else RhythmChannel
+  MidiChannel  -> MidiChannel
+end
+
+MidiProcessor <-- MidiChannel
+
+deactivate MidiChannel
+@enduml

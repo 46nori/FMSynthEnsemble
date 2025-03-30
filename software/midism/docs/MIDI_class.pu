@@ -1,0 +1,183 @@
+@startuml
+'
+' 関連
+'
+Voice <|-- NoteVoice
+Voice <|-- CsmVoice
+MidiChannel <|-- NoteChannel
+MidiChannel <|-- RhythmChannel
+interface MidiChannelObserver
+class NoteChannel implements MidiChannelObserver
+class RhythmChannel implements MidiChannelObserver
+together {
+  class NoteChannel
+  class Voice
+}
+Voice "0..*" -o "0..1" NoteChannel : activeQueue <
+Voice "0..*" -o "0..1" NoteChannel : holdQueue <
+Voice "0..*" -o "0..1" NoteChannel : freeQueue <
+VoiceAllocator "0..1" o- "0..*" MidiChannelObserver : observers >
+VoiceAllocator "0..1" o-- "0..*" Voice : voice_pool >
+OpnBase "0..1" -- "0..1" RhythmChannel : module >
+NoteVoice "0..1" -- "1" OpnBase : module >
+CsmVoice "0..1" -- "1..*" OpnBase : modules >
+MidiChannel "0..*" <-o "0..1" MidiProcessor : channels <
+
+OpnBase <|-- YM2203
+OpnBase <|-- YM2608
+class RP2040 implements HAL
+'HAL "1" -* "0..*" OpnBase : hal <
+OpnBase "0..*" *- "1" HAL : hal >
+
+MidiProcessor --[dashed]-> TinyUSB 
+'
+' 位置補正用
+'
+'NoteChannel ..> VoiceAllocator
+MidiChannel -[hidden]- RhythmChannel
+NoteChannel -[hidden]- MidiChannel
+OpnBase -[hidden] RhythmChannel
+'
+' クラス定義
+'
+class Voice <<abstract>> {
+  -int midi_ch
+  -int bk_program
+  -int volume
+  -int key
+  -int note_on_count
+  +const int id
+  +void Reset()
+  +int GetType()
+  +bool IsFree()
+  +int GetChannel()
+  +void SetChannel(channel)
+  +int GetKey()
+  +void SetNoteOnCount()
+  +int GetNoteOnCount()
+  +int IncrementNoteOnCount()
+  +int DecrementNoteOnCount()
+  {abstract} +int GetModuleId()
+  {abstract} +void SetProgram(program)
+  {abstract} +void SetVolume(vol)
+  {abstract} +bool NoteOn(key, velocity, volume)
+  {abstract} +bool NoteOff(key)
+  {abstract} +void SetPitch(pbv, pbs)
+  {abstract} +void SetModulation(pbv, pbs)
+}
+class NoteVoice {
+  -OpnBase& module
+  -uint8_t fm_ch;
+  -int16_t pbv
+}
+class CsmVoice {
+  -std::array<OpnBase*, 4>& modules
+  +Init()
+  +UpdateFrame()
+}
+class MidiChannelObserver <<interface>> {
+  {abstract} +Voice* Release()
+  {abstract} +void ReleaseAll()
+}
+class VoiceAllocator <<Singleton>> {
+  {static} +VoiceAllocator& GetInstance()
+  +void AddVoice(Voice*)
+  +void AddMidiChannelObserver(MidiChannelObserver*)
+  +Voice* Allocate(channel)
+  +void Reset()
+  {static} -instance
+  -std::vector<int, MidiChannelObserver*> observers
+  -std::vector<Voice*> voice_pool
+}
+
+class MidiChannel <<abstract>> {
+  #int channel
+  #int bk_program
+  #int volume
+  #bool hold1
+  #int16_t pbv
+  #int8_t pbs
+  #uint8_t rpn_msb
+  #uint8_t rpn_lsb
+  +void Reset()
+  +int GetChannel()
+  +int GetProgram()
+  +void SetProgram(program)
+  +in GetProgram()
+  +void SetVolume(vol)
+  +bool NoteOn(key, velocity)
+  +bool NoteOff(key)
+  +void Hold1(val)
+  +void PitchBend(val)
+  +void RPN_MSB(val)
+  +void RPN_LSB(val)
+  +void DataEntry_MSB(val)
+  +void DataEntry_LSB(val)
+  +void BankSelect_MSB(val)
+  +void BankSelect_LSB(val)
+}
+class NoteChannel {
+  -std::list<Voice*> activeQueue
+  -std::list<Voice*> holdQueue
+  -std::list<Voice*> freeQueue
+  +Voice* Release()
+  +void Reset()
+  +void SetVolume(vol)
+  +bool NoteOn(key, velocity)
+  +bool NoteOff(key)
+  +void Hold1(val)
+  +void DataEntry_MSB(val)
+  +void PitchBend(val)
+}
+class RhythmChannel {
+  -OpnBase* module
+  -uint8_t percussion_map[54]
+  +void Reset()
+  +void SetVolume(vol)
+  +bool NoteOn(key, velocity)
+  +bool NoteOff(key)
+  +Voice* Release()
+  +void ReleaseAll()
+}
+
+class MidiProcessor {
+  -std::array<MidiChannel*, 16>& channels
+  +void Exec()
+}
+
+class OpnBase {
+  -HAL hal
+  +const int id
+  {abstract}+void init()
+  {abstract}+int fm_get_channels()
+  +void fm_set_tone(no)
+  +void fm_set_pitch(fm_ch, key, oct)
+  +void fm_turnon_key(fm_ch)
+  +void fm_turnoff_key(fm_ch)
+}
+class YM2203 {
+}
+class YM2608 {
+  +void init()
+  +int fm_get_channels()
+}
+
+class HAL <<adapter>> {
+  {abstract}+uint8_t read(uint8_t adrs, uint8_t a1)
+  {abstract}+void write(uint8_t adrs, uint8_t data, uint8_t a1)
+}
+class RP2040 {
+  +uint8_t read(uint8_t adrs, uint8_t a1)
+  +void write(uint8_t adrs, uint8_t data, uint8_t a1)
+}
+
+package TinyUSB {
+  class USB_MIDI_DEVICE {
+    +board_init()
+    +tusb_init()
+    +tud_task()
+    +tud_midi_n_available()
+    +tud_midi_n_stream_read()
+  }
+}
+@enduml

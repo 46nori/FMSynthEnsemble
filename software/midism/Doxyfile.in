@@ -1,0 +1,7 @@
+# Doxyfile.in
+PROJECT_NAME           = "midism"
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_BINARY_DIR@/docs
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/midi @CMAKE_CURRENT_SOURCE_DIR@/hal
+FILE_PATTERNS          = *.cpp *.h
+RECURSIVE              = YES
+GENERATE_LATEX         = NO

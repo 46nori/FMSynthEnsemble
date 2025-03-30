@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "YAMAHA")(type "KiCad")(uri "${KIPRJMOD}/../lib/symbols/YAMAHA.kicad_sym")(options "")(descr ""))
+)

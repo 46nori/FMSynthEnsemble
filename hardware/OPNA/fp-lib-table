@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "46nori")(type "KiCad")(uri "${KIPRJMOD}/../lib/footprints")(options "")(descr ""))
+  (lib (name "Akizuki")(type "KiCad")(uri "${KIPRJMOD}/../lib/footprints/Akizuki")(options "")(descr ""))
+)

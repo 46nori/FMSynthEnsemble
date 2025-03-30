@@ -1,0 +1,68 @@
+---
+BasedOnStyle: google
+
+# 1行の文字数を制限する (0で無制限)
+ColumnLimit: 100
+# インデント
+IndentWidth: 4
+# アクセス修飾子のインデントは0
+AccessModifierOffset: -4
+# caseのインデントを行わない
+IndentCaseLabels: false
+
+# 引数の整列
+AlignAfterOpenBracket: Align
+# 構造体の初期化リストの整列
+AlignArrayOfStructures: Right
+# 連続行の'='を整列
+AlignConsecutiveAssignments: true
+# 連続行の'&='などを'='で整列
+#AlignCompound: true
+# 連続行の'>>='などを'='で整列
+#PadOperators: false
+# 連続行の宣言を整列しない
+AlignConsecutiveDeclarations: false
+# 連続行のマクロを整列
+AlignConsecutiveMacros: true
+# エスケープ改行のバックスペース位置を整列
+AlignEscapedNewlines: true
+# 連続行のコメントを整列
+AlignTrailingComments: true
+# 水平方向に二項演算子と三項演算子を揃える
+AlignOperands: true
+# 短い行を単一行にしない(class内で定義された関数は除く)
+AllowShortFunctionsOnASingleLine: InlineOnly
+# コメント行は改行しない
+ReflowComments: false
+
+# '{'の位置
+BraceWrapping:
+  AfterClass: true             # classの後
+  AfterControlStatement: true  # 制御文の後
+  AfterEnum: true              # enumの後
+  AfterFunction: false         # 関数の後
+  AfterNamespace: true         # namespaceの後
+  AfterStruct: true            # structの後
+  AfterUnion: true             # unionの後
+  AfterExternBlock: true       # externの後
+  BeforeCatch: true            # catchの前
+  BeforeElse: true             # elseの前
+
+# '*','&'の位置を型側に寄せる
+PointerAlignment: Left
+# キャストの後にスペースを入れない
+SpaceAfterCStyleCast: false
+# 演算子の前にスペースを入れる
+SpaceBeforeAssignmentOperators: true
+# 関数の開始括弧にスペースを入れないが、制御文の前には入れる
+SpaceBeforeParens: ControlStatements
+# 空の'()'にスペースを入れない
+SpaceInEmptyParentheses: false
+# '<>'にスペースを入れない
+SpacesInAngles: false
+# キャストの括弧にスペースを入れない
+SpacesInCStyleCastParentheses: false
+# '()'にスペースを入れない
+SpacesInParentheses: false
+# '[]'にスペースを入れない
+SpacesInSquareBrackets: false

@@ -8,22 +8,28 @@
 #include "MidiChannel.h"
 #include "MidiChannelObserver.h"
 #include "YM2608.h"
+#include <array>
+#include <vector>
 
 /**
  * @brief Rhythm Channel class (CH=10)
  */
 class RhythmChannel : public MidiChannel, public MidiChannelObserver {
 private:
-    OpnBase* module;
+    std::vector<OpnBase*> modules;          // 使用可能なモジュール(YM2608)
+    uint8_t last_module            = 0;     // 直前に発音したモジュールのindex
+    uint8_t cur_module             = 0;     // 現在のモジュールのindex
+    int16_t last_exclusive_note[6] = {-1, -1, -1,
+                                      -1, -1, -1};  // 各排他グループの直前のノート番号を記憶
 
 public:
     static constexpr int MIDI_RHYTHM_CHANNEL = 9;  // MIDI CH=10
 
     /**
      * @brief コンストラクタ
-     * @param module Rhythmを割り当てるFM音源モジュール
+     * @param modules FM音源モジュールの配列
      */
-    RhythmChannel(OpnBase* module);
+    RhythmChannel(std::array<OpnBase*, 4>& input_modules);
     RhythmChannel() = delete;
 
     /**
@@ -42,13 +48,15 @@ public:
      * @param key MIDI Note No.
      * @param velocity MIDI Velocity
      * @return -1:Fail, 0:NoteOff, 1:NoteOn
+     * @details 排他ノートを除き消音処理は行わない
      */
     int NoteOn(int key, int velocity) override;
 
     /**
      * @brief Note Off
      * @param key MIDI Note No.
-     * @return -1:Fail, 0:NoteOff, 1:Keep NoteOn
+     * @return 0:NoteOff
+     * @details 消音処理は行わない
      */
     int NoteOff(int key) override;
 
@@ -60,7 +68,6 @@ public:
 
     /**
      * @brief 当該チャンネルに割り当てられたVoiceをすべて解放する
-     * @details FM音源のVoiceは使用しないので何もしない
      */
     void ReleaseAll() override;
 

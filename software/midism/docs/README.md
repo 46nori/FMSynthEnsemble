@@ -23,19 +23,31 @@ MIDIチャンネルのインターフェースである。
 #### NoteChannel
 
 MIDIチャンネル1-9,11-16用を管理する実装クラス。MidiChannelを継承する。
+MidiProcessorから、MidiChannelのインターフェースで呼び出される。
 
 Voice管理用のキューを持ち、NoteVoiceとCsmVoiceの制御を行う。
 
 #### RhythmChannel
 
 MIDIチャンネル10で使用するリズム用チャンネルの実装クラス。MidiChannelを継承する。
+MidiProcessorから、MidiChannelのインターフェースで呼び出される。
 
-MidiProcessorからは、MidiChannelのインターフェースで呼び出される。パーカッションマップを持っており、指定されたProgramはこのマップから選択する。
+パーカッションマップを持っており、ノートに対応する音源はこのマップから選択する。非対応のノート番号が指定された場合は発音しない。
+YM2608のリズム音源のみを使用しているので、音源が6種類しかなく、パーカッションマップのすべてには対応できていない。
+SSG音源を使用した音源の実装も考えられるが未対応。
 
-- 現在の実装
-  - YM2608のリズム音源を使用しているが、6種類しかないので、パーカッションマップにすべて対応させることができていない。非対応のProgramを指定された場合は発音しない。
-  - NoteOn/OffはMidiChannelのインターフェース経由で呼ばれ、YM2608のリズム音源で発音する。
-  - FM音源Voiceを使用しないので、Voiceインスタンスはこのチャンネルには割り当てていない。
+同時発音数を稼ぐため、コンストラクタで渡されるFM音源モジュールのリストに含まれる全てのOPNAを利用する。OPNAがひとつも存在しない場合は発音しない。
+FM音源のVoiceを使用しないので、このチャンネルにVoiceインスタンスは割り当てない。
+
+リズムチャンネルでは、NoteOffまたはvelocity=0でのNoteOnでの消音処理を行わないが、以下の排他グループ内の連続発音時は、強制消音後に指定ノートの発音を行う。([General MIDI Lite3.1.7.1](https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf)参照)
+
+|排他グループ|ノート番号  |
+|----------|----------|
+|クローズド/ペダル/オープン ハイハット|42, 44, 46|
+|ショート/ロング ホイッスル|71, 72    |
+|ショート/ロング ギロ|73, 74    |
+|ミュート/オープン クイーカ|78, 79    |
+|ミュート/オープン トライアングル|80, 81    |
 
 ### クラス図
 
@@ -138,8 +150,7 @@ OPNでは4つのオペレータにキャリアとモジュレータという役�
 
 ### Rhythm音源
 
-MIDIチャンネル10ではRhythmChannelクラスで実装されており、YM2608(OPNA)の内蔵する6種類のRhythm音源を使用している。
-RTL(Rhythm Total Level)とIL(Instrument Total Level)の2種類の音量体系を持つ。
+YM2608のRhythm音源は、RTL(Rhythm Total Level)とIL(Instrument Total Level)の2種類の音量体系を持つ。
 RTLはリズム全体の音量で、63で0dB(最大音量)、0で-47.5dB(ミュート)となる。
 ITLは六種それぞれの楽器ごとの音量で、31で0dB(最大音量)、0で-23.25dB(ミュート)である。
 
@@ -255,4 +266,5 @@ OPNAボードを使用する場合は、config.hの以下のマクロを有効�
 
 ## その他
 
+- [General MIDI Lite 仕様書](https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf)
 - [FM音源LSIのTips](./tips.md)

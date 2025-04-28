@@ -25,7 +25,7 @@ MidiFactory::~MidiFactory() {
     }
 }
 
-std::array<MidiChannel*, MIDI_CHANNELS>& MidiFactory::Create(OpnBase* rhythm_module) {
+std::array<MidiChannel*, MIDI_CHANNELS>& MidiFactory::Create() {
     VoiceAllocator& allocator = VoiceAllocator::GetInstance();
 
     // VoiceAllocatorにFM音源モジュールのチャンネルを登録
@@ -57,7 +57,7 @@ std::array<MidiChannel*, MIDI_CHANNELS>& MidiFactory::Create(OpnBase* rhythm_mod
     for (int i = 0; i < channels.size(); i++) {
         if (i == RhythmChannel::MIDI_RHYTHM_CHANNEL) {
             // リズムチャンネル
-            RhythmChannel* rc = new RhythmChannel(rhythm_module);
+            RhythmChannel* rc = new RhythmChannel(modules);
             channels[i]       = rc;
             // VoiceAllocatorにオブザーバーを登録
             allocator.AddObserver(i, rc);

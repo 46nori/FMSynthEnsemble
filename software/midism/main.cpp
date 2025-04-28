@@ -52,10 +52,9 @@ int main(int argc, char** argv) {
         &module_3   // Dock3
     };
 
-    // MIDIチャンネルのインスタンス生成とリズムチャンネルの設定
-    // (ここではmodule_3のYM2608をリズム用に使用している)
+    // MIDIチャンネルのインスタンス生成
     MidiFactory factory(modules);
-    auto midi_channels = factory.Create(&module_3);
+    auto midi_channels = factory.Create();
 
     // MIDI processorの生成
     MidiProcessor mp(midi_channels);

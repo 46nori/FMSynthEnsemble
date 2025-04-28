@@ -18,7 +18,7 @@ Voice "0..*" -o "0..1" NoteChannel : holdQueue <
 Voice "0..*" -o "0..1" NoteChannel : freeQueue <
 VoiceAllocator "0..1" o- "0..*" MidiChannelObserver : observers >
 VoiceAllocator "0..1" o-- "0..*" Voice : voice_pool >
-OpnBase "0..1" -- "0..1" RhythmChannel : module >
+OpnBase "0..*" -- "0..1" RhythmChannel : modules <
 NoteVoice "0..1" -- "1" OpnBase : module >
 CsmVoice "0..1" -- "1..*" OpnBase : modules >
 MidiChannel "0..*" <-o "0..1" MidiProcessor : channels <
@@ -130,7 +130,7 @@ class NoteChannel {
   +void PitchBend(val)
 }
 class RhythmChannel {
-  -OpnBase* module
+  -std::array<OpnBase*, 4>& modules
   -uint8_t percussion_map[54]
   +void Reset()
   +void SetVolume(vol)

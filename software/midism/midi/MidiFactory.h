@@ -33,8 +33,7 @@ public:
 
     /**
      * @brief MIDIチャンネルとMIDI Voiceの生成
-     * @param rhythm_module 割り当てるリズム音源モジュール
      * @return 生成したMIDIチャンネルの配列
      */
-    std::array<MidiChannel*, MIDI_CHANNELS>& Create(OpnBase* rhythm_module = nullptr);
+    std::array<MidiChannel*, MIDI_CHANNELS>& Create();
 };

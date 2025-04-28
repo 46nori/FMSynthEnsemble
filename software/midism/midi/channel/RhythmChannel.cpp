@@ -70,6 +70,24 @@ static constexpr YM2608::RtmInst percussion_map[54] = {
     YM2608::RtmInst::NONE,  // #88(E5)
 };
 
+// 排他ノート管理マップ（ノート範囲42～81）
+static constexpr int exclusive_map[81 - 42 + 1] = {
+    // 排他グループID:
+    //   42/44/46 => 1: ハイハット クローズド/ペダル/オープン
+    //   71/72    => 2: ショート/ロングホイッスル
+    //   73/74    => 3: ショート/ロングギロ
+    //   78/79    => 4: ミュート/オープンクイーカ
+    //   80/81    => 5: ミュート/オープントライアングル
+    //   上記以外  => 0: 排他なし
+    /* 42-46 */ 1, 0, 1, 0, 1,
+    /* 47-70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 71-72 */ 2, 2,
+    /* 73-74 */ 3, 3,
+    /* 75-77 */ 0, 0, 0,
+    /* 78-79 */ 4, 4,
+    /* 80-81 */ 5, 5
+};
+
 //  RTL(Rhythm Total Level)音量テーブル
 //  MIDI volume(x:0-127)を RTL(y:0-63)に変換する。
 //          ｙ = 29.90*log(x+1)
@@ -94,7 +112,16 @@ static constexpr uint8_t ILvolume[128] = {
     30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
 };
 
-RhythmChannel::RhythmChannel(OpnBase* module) : MidiChannel(MIDI_RHYTHM_CHANNEL), module(module) {
+RhythmChannel::RhythmChannel(std::array<OpnBase*, 4>& input_modules)
+    : MidiChannel(MIDI_RHYTHM_CHANNEL) {
+    // 使用可能なYM2608をmodulesに追加
+    // (不本意ながらfm_get_channels()==6でOPNAを判別)
+    for (auto* m : input_modules) {
+        if (m != nullptr && m->fm_get_channels() == 6) {
+            modules.push_back(m);
+        }
+    }
+
     SetOutputLR(LR);        // L/R両チャンネル出力に設定
     init_volume(100, 127);  // デフォルト音量
 }
@@ -111,33 +138,56 @@ void RhythmChannel::Reset() {
 void RhythmChannel::init_volume(uint8_t rtl, uint8_t il) {
     SetVolume(rtl);
     il = ILvolume[il];
-    module->rtm_set_inst_level(YM2608::RtmInst::BD, il);
-    module->rtm_set_inst_level(YM2608::RtmInst::SD, il);
-    module->rtm_set_inst_level(YM2608::RtmInst::TOP, il);
-    module->rtm_set_inst_level(YM2608::RtmInst::HH, il);
-    module->rtm_set_inst_level(YM2608::RtmInst::TOM, il);
-    module->rtm_set_inst_level(YM2608::RtmInst::RIM, il);
+
+    for (auto *m : modules) {
+        if (m) {
+            m->rtm_set_inst_level(YM2608::RtmInst::BD, il);
+            m->rtm_set_inst_level(YM2608::RtmInst::SD, il);
+            m->rtm_set_inst_level(YM2608::RtmInst::TOP, il);
+            m->rtm_set_inst_level(YM2608::RtmInst::HH, il);
+            m->rtm_set_inst_level(YM2608::RtmInst::TOM, il);
+            m->rtm_set_inst_level(YM2608::RtmInst::RIM, il);
+        }
+    }
 }
 
 void RhythmChannel::SetVolume(int vol) {
-    if (volume != vol) {
+    if (!modules.empty() && volume != vol) {
         volume = vol;
-        module->rtm_set_total_level(RTLvolume[vol]);
+        modules[cur_module]->rtm_set_total_level(RTLvolume[vol]);
     }
 }
 
 int RhythmChannel::NoteOn(int key, int velocity) {
+    if (modules.empty()) {
+        return -1;      // 使用可能なYM2608がない
+    }
+
+    // 排他ノートの処理
+    if (key >= 42 && key <= 81) {
+        int group = exclusive_map[key - 42]; // ノート番号に対応する排他グループを取得
+        if (group > 0) { // 排他グループに属している場合
+            int16_t& last_note = last_exclusive_note[group - 1];
+            if (last_note != -1 && last_note != key) {
+                // 直前のノートを強制damp
+                modules[last_module]->rtm_damp_key(percussion_map[last_note - 35]);
+            }
+            last_note = key;  // 現在のノートをlast_exclusive_noteに記憶
+        }
+    }
+
     int st = 1;
     if (key >= 35 && key < sizeof(percussion_map) / sizeof(YM2608::RtmInst) + 35) {
         YM2608::RtmInst note = percussion_map[key - 35];
         if (note != YM2608::RtmInst::NONE) {
             if (velocity == 0) {
-                module->rtm_damp_key(note);
                 st = 0;
             } else {
                 // velocityに応じた音量変化
-                module->rtm_set_inst_level(note, ILvolume[volume]);
-                module->rtm_turnon_key(note);
+                modules[cur_module]->rtm_set_inst_level(note, ILvolume[volume]);
+                modules[cur_module]->rtm_turnon_key(note);
+                last_module = cur_module;
+                cur_module  = (cur_module + 1) % modules.size();
             }
             DPRINTF(1, " *%02d ", key);
             return st;
@@ -148,7 +198,7 @@ int RhythmChannel::NoteOn(int key, int velocity) {
 }
 
 int RhythmChannel::NoteOff(int key) {
-    return NoteOn(key, 0);
+    return 0;
 }
 
 Voice* RhythmChannel::Release(int mid, bool type) {
@@ -162,4 +212,15 @@ void RhythmChannel::ReleaseAll() {
 void RhythmChannel::dump() {
     MidiChannel::dump();
     printf("  TYPE=RTM\n");
+    printf("  OPNA : ");
+    if (modules.empty()) {
+        printf("None");
+    } else {
+        for (auto& m : modules) {
+            if (m) {
+                printf("%d ", m->id);
+            }
+        }
+    }
+    printf("\n");
 }

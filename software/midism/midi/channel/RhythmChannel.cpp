@@ -17,7 +17,7 @@ static constexpr YM2608::RtmInst percussion_map[54] = {
     YM2608::RtmInst::BD,    // #36(C1)   バスドラム1(Bass Drum 1)
     YM2608::RtmInst::RIM,   // #37(C#1)  サイドスティック(Side Stick)
     YM2608::RtmInst::SD,    // #38(D1)   アコースティック・スネア(Acoustic Snare)
-    YM2608::RtmInst::RIM,   // N/A #39(D#1)  手拍子(Hand Clap)
+    YM2608::RtmInst::RIM,   // #39(D#1)  手拍子(Hand Clap)
     YM2608::RtmInst::SD,    // #40(E1)   エレクトリック・スネア(Electric Snare)
     YM2608::RtmInst::TOM,   // #41(F1)   ロー・フロア・タム(Low Floor Tom)
     YM2608::RtmInst::HH,    // #42(F#1)  クローズド・ハイハット(Closed Hi-hat)
@@ -29,24 +29,24 @@ static constexpr YM2608::RtmInst percussion_map[54] = {
     YM2608::RtmInst::TOM,   // #48(C2)   ハイ・ミッド・タム(High Mid Tom)
     YM2608::RtmInst::TOP,   // #49(C#2)  クラッシュ・シンバル1(Crash Cymbal 1)
     YM2608::RtmInst::TOM,   // #50(D2)   ハイ・タム(High Tom)
-    YM2608::RtmInst::TOP,   // #51(D#2)  ライド・シンバル1(Ride Cymbal 1)
-    YM2608::RtmInst::TOP,   // N/A #52(E2)   チャイニーズ・シンバル(Chinese Cymbal)
-    YM2608::RtmInst::TOP,   // N/A #53(F2)   ライド・ベル(Ride Bell)
-    YM2608::RtmInst::NONE,  // N/A #54(F#2)  タンバリン(Tambourine)
+    YM2608::RtmInst::HH,    // #51(D#2)  ライド・シンバル1(Ride Cymbal 1)
+    YM2608::RtmInst::TOP,   // #52(E2)   チャイニーズ・シンバル(Chinese Cymbal)
+    YM2608::RtmInst::TOP,   // #53(F2)   ライド・ベル(Ride Bell)
+    YM2608::RtmInst::HH,    // #54(F#2)  タンバリン(Tambourine)
     YM2608::RtmInst::TOP,   // #55(G2)   スプラッシュ・シンバル(Splash Cymbal)
-    YM2608::RtmInst::NONE,  // N/A #56(G#2)  カウベル(Cowbell)
+    YM2608::RtmInst::NONE,  // #56(G#2)  カウベル(Cowbell)
     YM2608::RtmInst::TOP,   // #57(A2)   クラッシュ・シンバル2(Crash Cymbal 2)
-    YM2608::RtmInst::NONE,  // N/A #58(A#2)  ヴィブラ・スラップ(Vibra-slap)
-    YM2608::RtmInst::TOP,   // #59(B2)   ライドシンバル2(Ride Cymbal 2)
+    YM2608::RtmInst::NONE,  // #58(A#2)  ヴィブラ・スラップ(Vibra-slap)
+    YM2608::RtmInst::HH ,   // #59(B2)   ライドシンバル2(Ride Cymbal 2)
     YM2608::RtmInst::TOM,   // #60(C3)   ハイ・ボンゴ(High Bongo)
     YM2608::RtmInst::TOM,   // #61(C#3)  ロー・ボンゴ(Low Bongo)
-    YM2608::RtmInst::TOM,   // #62(D3)   ミュート・ハイ・コンガ(Mute Hi Conga)
+    YM2608::RtmInst::RIM,   // #62(D3)   ミュート・ハイ・コンガ(Mute Hi Conga)
     YM2608::RtmInst::TOM,   // #63(D#3)  オープン・ハイ・コンガ(Open Hi Conga)
     YM2608::RtmInst::TOM,   // #64(E3)   ロー・コンガ(Low Conga)
-    YM2608::RtmInst::TOM,   // #65(F3)   ハイ・ティンバレ(High Timbale)
-    YM2608::RtmInst::TOM,   // #66(F#3)  ロー・ティンバレ(Low Timbale)
-    YM2608::RtmInst::NONE,  // #67(G3)   ハイ・アゴゴ(High Agogo)
-    YM2608::RtmInst::NONE,  // #68(G#3)  ロー・アゴゴ(Low Agogo)
+    YM2608::RtmInst::RIM,   // #65(F3)   ハイ・ティンバレ(High Timbale)
+    YM2608::RtmInst::RIM,   // #66(F#3)  ロー・ティンバレ(Low Timbale)
+    YM2608::RtmInst::HH,    // #67(G3)   ハイ・アゴゴ(High Agogo)
+    YM2608::RtmInst::HH,    // #68(G#3)  ロー・アゴゴ(Low Agogo)
     YM2608::RtmInst::NONE,  // #69(A3)   カバサ(Cabasa)
     YM2608::RtmInst::NONE,  // #70(A#3)  マラカス(Maracas)
     YM2608::RtmInst::NONE,  // #71(B3)   ショート・ホイッスル(Short Whistle)
@@ -58,8 +58,8 @@ static constexpr YM2608::RtmInst percussion_map[54] = {
     YM2608::RtmInst::NONE,  // #77(F4)   ロー・ウッドブロック(Low Wood Block)
     YM2608::RtmInst::NONE,  // #78(F#4)  ミュート・クイーカ(Mute Cuica)
     YM2608::RtmInst::NONE,  // #79(G4)   オープン・クイーカ(Open Cuica)
-    YM2608::RtmInst::NONE,  // #80(G#4)  ミュート・トライアングル(Mute Triangle)
-    YM2608::RtmInst::NONE,  // #81(A4)   オープン・トライアングル(Open Triangle)
+    YM2608::RtmInst::HH,    // #80(G#4)  ミュート・トライアングル(Mute Triangle)
+    YM2608::RtmInst::HH,    // #81(A4)   オープン・トライアングル(Open Triangle)
     // GM2
     YM2608::RtmInst::HH,    // #82(A#4)  シェイカー(Shaker)
     YM2608::RtmInst::NONE,  // #83(B4)   ジングルベル(Jingle Bell)
@@ -133,6 +133,13 @@ void RhythmChannel::Reset() {
     // コンストラクタと同じ設定にする
     MidiChannel::Reset();
     init_volume(100, 127);
+
+    // 排他ノート処理の初期化
+    last_module = 0;
+    cur_module  = 0;
+    for (auto& note : last_exclusive_note) {
+        note = -1;
+    }
 }
 
 void RhythmChannel::init_volume(uint8_t rtl, uint8_t il) {
@@ -140,7 +147,7 @@ void RhythmChannel::init_volume(uint8_t rtl, uint8_t il) {
     il = ILvolume[il];
 
     for (auto *m : modules) {
-        if (m) {
+        if (m != nullptr) {
             m->rtm_set_inst_level(YM2608::RtmInst::BD, il);
             m->rtm_set_inst_level(YM2608::RtmInst::SD, il);
             m->rtm_set_inst_level(YM2608::RtmInst::TOP, il);
@@ -217,7 +224,7 @@ void RhythmChannel::dump() {
         printf("None");
     } else {
         for (auto& m : modules) {
-            if (m) {
+            if (m != nullptr) {
                 printf("%d ", m->id);
             }
         }

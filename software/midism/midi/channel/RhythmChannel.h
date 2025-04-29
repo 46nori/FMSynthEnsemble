@@ -19,8 +19,7 @@ private:
     std::vector<OpnBase*> modules;          // 使用可能なモジュール(YM2608)
     uint8_t last_module            = 0;     // 直前に発音したモジュールのindex
     uint8_t cur_module             = 0;     // 現在のモジュールのindex
-    int16_t last_exclusive_note[6] = {-1, -1, -1,
-                                      -1, -1, -1};  // 各排他グループの直前のノート番号を記憶
+    int16_t last_exclusive_note[6] = {-1};  // 各排他グループの直前のノート番号を記憶
 
 public:
     static constexpr int MIDI_RHYTHM_CHANNEL = 9;  // MIDI CH=10

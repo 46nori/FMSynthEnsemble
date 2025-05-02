@@ -130,10 +130,11 @@ RhythmChannel::~RhythmChannel() {
 }
 
 void RhythmChannel::Reset() {
-    // コンストラクタと同じ設定にする
-    MidiChannel::Reset();
     init_volume(100, 127);
+    MidiChannel::Reset();
+}
 
+void RhythmChannel::ResetAllController() {
     // 排他ノート処理の初期化
     last_module = 0;
     cur_module  = 0;
@@ -206,6 +207,15 @@ int RhythmChannel::NoteOn(int key, int velocity) {
 
 int RhythmChannel::NoteOff(int key) {
     return 0;
+}
+
+void RhythmChannel::AllNoteOff() {
+    for (auto* m : modules) {
+        if (m != nullptr) {
+            m->rtm_damp_key(YM2608::RtmInst::BD | YM2608::RtmInst::SD | YM2608::RtmInst::TOP |
+                            YM2608::RtmInst::HH | YM2608::RtmInst::TOM | YM2608::RtmInst::RIM);
+        }
+    }
 }
 
 Voice* RhythmChannel::Release(int mid, bool type) {

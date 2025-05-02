@@ -30,20 +30,25 @@ MidiChannel::~MidiChannel() {
 }
 
 void MidiChannel::Reset() {
-    // コンストラクタと同じ設定にする
-    effect.Init();
+    AllNoteOff();
+    ResetAllController();
     outputLR          = (channel % 2 ? R : L);
     volume            = -1;
     pan               = -1;
+    bk_program        = 0;
+    bk_msb            = 0;
+
+    rel_success_count = 0;
+    rel_fail_count    = 0;
+}
+
+void MidiChannel::ResetAllController() {
+    effect.Init();
     hold1             = false;
     rpn_msb           = 127;
     rpn_lsb           = 127;
     nrpn_msb          = 127;
     nrpn_lsb          = 127;
-    bk_program        = 0;
-    bk_msb            = 0;
-    rel_success_count = 0;
-    rel_fail_count    = 0;
 }
 
 int MidiChannel::GetNumber() {

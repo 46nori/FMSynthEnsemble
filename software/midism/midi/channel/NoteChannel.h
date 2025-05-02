@@ -64,6 +64,11 @@ public:
     void Reset() override;
 
     /**
+     * @brief 全ノートをOFFする
+     */
+    void AllNoteOff() override;
+
+    /**
      * @brief 当該チャンネルに割り当てられたVoiceのうち未使用のものを解放する
      * @return 解放したVoiceへのポインタ
      * @details 未使用のVoiceがない場合はnullptrを返す

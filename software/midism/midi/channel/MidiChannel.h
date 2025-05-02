@@ -122,6 +122,11 @@ public:
     virtual int NoteOff(int key) = 0;
 
     /**
+     * @brief All MIDI Note Off
+     */
+    virtual void AllNoteOff() = 0;
+
+    /**
      * @brief CC#64 Hold1 (damper pedal)処理を行う
      * @param val ダンパー値 ON(val>=64)/OFF(val<64)
      * @details ダンパーペダルのON/OFFを受け取り、チャンネル内の状態を更新する。
@@ -173,6 +178,12 @@ public:
      * @brief CC#10 Pan
      */
     virtual void SetPan(uint8_t val);
+
+    /**
+     * @brief CC#121 Reset All Controller
+     * @details Program, Volume, Panはリセットされない
+     */
+    virtual void ResetAllController();
 
     // Debug
     virtual void dump();

@@ -17,13 +17,6 @@ NoteChannel::~NoteChannel() {
 }
 
 void NoteChannel::Reset() {
-    Hold1(0);
-    for (auto& voice : activeQueue) {
-        voice->NoteOff();
-    }
-    for (auto& voice : holdQueue) {
-        voice->NoteOff();
-    }
     MidiChannel::Reset();
     bCsmVoiceMode = false;
 }
@@ -233,6 +226,16 @@ int NoteChannel::NoteOff(int key) {
     }
     DPRINTF(1, " -?? ");
     return -1;
+}
+
+void NoteChannel::AllNoteOff() {
+    Hold1(0);
+    for (auto& voice : activeQueue) {
+        voice->NoteOff();
+    }
+    for (auto& voice : holdQueue) {
+        voice->NoteOff();
+    }
 }
 
 void NoteChannel::Hold1(int val) {

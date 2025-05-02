@@ -37,6 +37,16 @@ public:
     virtual ~RhythmChannel();
 
     /**
+     * @brief MIDIチャンネルのリセット
+     */
+    virtual void Reset() override;
+
+    /**
+     * @brief 全ノートをOFFする
+     */
+    virtual void AllNoteOff() override;
+
+    /**
      * @brief MIDI Volumeをセット
      * @param vol MIDI Volume (0 - 127)
      */
@@ -71,9 +81,9 @@ public:
     void ReleaseAll() override;
 
     /**
-     * @brief MIDIチャンネルのリセット
+     * @brief CC#121 Reset All Controller
      */
-    void Reset() override;
+    void ResetAllController() override;
 
     // Debug
     void dump() override;

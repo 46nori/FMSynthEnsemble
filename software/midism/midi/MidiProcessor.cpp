@@ -226,8 +226,13 @@ void MidiProcessor::process_event(const uint8_t msg[3]) {
             channel->BankSelect_LSB(msg[2]);
             break;
         case 120:  // All Sound Off
+            channel->SetVolume(0);
+            break;
+        case 121:  // Reset all controller
+            channel->ResetAllController();
+            break;
         case 123:  // All Note Off
-            channel->Reset();
+            channel->AllNoteOff();
             break;
         }
         DPRINTF(3, "CC: #%d/%d", msg[1], msg[2]);

@@ -43,6 +43,10 @@ public:
      */
     MidiProcessor(std::array<MidiChannel*, MIDI_CHANNELS>& channels);
     MidiProcessor() = delete;
+
+    /**
+     * @brief デストラクタ
+     */
     ~MidiProcessor();
 
     /**

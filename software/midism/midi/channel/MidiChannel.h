@@ -55,6 +55,11 @@ public:
      * pbs       : デフォルトは2
      */
     MidiChannel(int no);
+    MidiChannel() = delete;
+
+    /**
+     * @brief デストラクタ
+     */
     virtual ~MidiChannel();
 
     /**

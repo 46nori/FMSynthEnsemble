@@ -135,6 +135,8 @@ void RhythmChannel::Reset() {
 }
 
 void RhythmChannel::ResetAllController() {
+    MidiChannel::ResetAllController();
+
     // 排他ノート処理の初期化
     last_module = 0;
     cur_module  = 0;

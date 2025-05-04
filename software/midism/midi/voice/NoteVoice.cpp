@@ -36,8 +36,8 @@ static constexpr uint8_t opn_volume[128] = {
  *  - NoteOn()からは、keyがセットされた後で呼ばれる。
  *  - NoteChannelからは、KeyOnのVoiceとして呼ばれる。
  */
-static constexpr int PBS_MARGIN    = 2;
-static constexpr uint16_t fnum[16] = {
+static constexpr int PBS_MARGIN = 2;
+static constexpr uint16_t fnum[12 + PBS_MARGIN * 2] = {
     // pbs <= 2の場合の参照用
     0x0226,  // A# (-2)
     0x0247,  // B  (-1)
@@ -137,12 +137,7 @@ void NoteVoice::SetPitch(VoiceEffect& effect) {
             // PitchBend計算用のマージンを使ってkey=108までサポート
             module.fm_set_pitch(fm_ch, 11, 7, fnum[14] - fnum[13]);
         } else {
-#if 1
             module.fm_set_pitch(fm_ch, key % 12, key / 12 - 1, 0);
-#else
-            div_t k = div(key, 12);
-            module.fm_set_pitch(fm_ch, k.rem, k.quot - 1, 0);
-#endif
         }
         return;
     }
@@ -170,14 +165,8 @@ void NoteVoice::SetPitch(VoiceEffect& effect) {
         k   = 11 + PBS_MARGIN;
         oct = 7;
     } else {
-#if 1
         k   = pbkey % 12 + PBS_MARGIN;
         oct = pbkey / 12 - 1;
-#else
-        div_t pbk = div(pbkey, 12);
-        k         = pbk.rem + PBS_MARGIN;
-        oct       = pbk.quot - 1;
-#endif
     }
 
     // diff : PitchBend位置での、基準NoteからのF-Numberの偏差

@@ -14,6 +14,16 @@ class Voice;
 class MidiChannelObserver {
 public:
     /**
+     * @brief コンストラクタ
+     */
+    MidiChannelObserver() = default;
+
+    /**
+     * @brief デストラクタ
+     */
+    virtual ~MidiChannelObserver() = default;
+
+    /**
      * @brief チャンネルに割り当てられたVoiceのうち未使用のものを解放する
      * @return 割り当てできない場合はnullptrを返す
      */

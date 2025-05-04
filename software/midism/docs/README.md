@@ -1,6 +1,6 @@
 # ソフトウェア設計仕様
 
-## クラス
+## クラス概要
 
 ### HAL
 
@@ -39,7 +39,7 @@ SSG音源を使用した音源の実装も考えられるが未対応。
 同時発音数を稼ぐため、コンストラクタで渡されるFM音源モジュールのリストに含まれる全てのOPNAを利用する。OPNAがひとつも存在しない場合は発音しない。
 FM音源のVoiceを使用しないので、このチャンネルにVoiceインスタンスは割り当てない。
 
-リズムチャンネルでは、NoteOffまたはvelocity=0でのNoteOnでの消音処理を行わないが、以下の排他グループ内の連続発音時は、強制消音後に指定ノートの発音を行う。([General MIDI Lite3.1.7.1](https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf)参照)
+リズムチャンネルでは、NoteOffまたはvelocity=0でのNoteOnでの消音処理を行わないが、以下の排他グループ内の連続発音時は、強制消音後に指定ノートの発音を行う。([General MIDI Lite 3.1.7.1](https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf)参照)
 
 |排他グループ|ノート番号  |
 |----------|----------|
@@ -266,5 +266,7 @@ OPNAボードを使用する場合は、config.hの以下のマクロを有効�
 
 ## その他
 
-- [General MIDI Lite 仕様書](https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf)
+- [MIDI規格RP/CA](https://amei.or.jp/midistandardcommittee/RP&CAj.html)
+  - [MIDI 1.0 規格書](https://amei.or.jp/midistandardcommittee/MIDI1.0.pdf) (RP-001〜RP-013相当)
+  - [GMライト及びモバイル・アプリケーションのためのガイドライン](https://amei.or.jp/midistandardcommittee/Recommended_Practice/General_MIDI_Lite_v1.0_japanese.pdf) (RP-033)
 - [FM音源LSIのTips](./tips.md)

@@ -21,7 +21,7 @@
 #include "pico/stdlib.h"
 #include "tusb.h"
 
-#if ENABLE_DEUGGER == 1
+#if ENABLE_DEBUGGER == 1
 using namespace Debugger;
 static void core1_entry();
 static void debug_command(std::array<MidiChannel*, MIDI_CHANNELS>& channels, MidiProcessor& mp);
@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     tusb_init();
     sleep_ms(500);
 
-#if ENABLE_DEUGGER == 1
+#if ENABLE_DEBUGGER == 1
     // Debuggerの起動(Core1)
     multicore_launch_core1(core1_entry);
 #endif
@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
         }
 
 #endif
-#if ENABLE_DEUGGER == 1
+#if ENABLE_DEBUGGER == 1
         // Debuggerからのコマンド処理
         if (multicore_fifo_rvalid()) {
             debug_command(midi_channels, mp);
@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
     } while (1);
 }
 
-#if ENABLE_DEUGGER == 1
+#if ENABLE_DEBUGGER == 1
 /*********************************************************
  * Debugger (Core1)
  *********************************************************/

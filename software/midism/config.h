@@ -10,7 +10,7 @@
 constexpr int MIDI_CHANNELS = 16;
 
 // デバッグモードの有効化
-#define ENABLE_DEUGGER                         1
+#define ENABLE_DEBUGGER                        1
 #define ENABLE_DEBUG_PRINT                     1
 
 // CSMボイスの有効化

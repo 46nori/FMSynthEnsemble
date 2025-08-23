@@ -33,8 +33,8 @@ private:
 
     // System Exclusive message
     bool isSysEx;
-    int q_index;            // index of msg_queue
-    uint8_t msg_queue[10];  // data buffer between 0xf0 and 0xf7.
+    int q_index;             // index of msg_queue
+    uint8_t msg_queue[128];  // data buffer between 0xf0 and 0xf7. (increased from 10)
 
 public:
     /**

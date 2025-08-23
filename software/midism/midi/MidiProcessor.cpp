@@ -113,8 +113,8 @@ uint16_t MidiProcessor::Exec(uint8_t msg[3], int num) {
             }
         } else {
             // running status
+            msg[2] = (num > 1) ? msg[1] : 0;
             msg[1] = msg[0];
-            msg[2] = msg[1];
             msg[0] = status_byte;
         }
         process_event(msg);
